@@ -58,19 +58,21 @@ MyApplet.prototype = {
   },
   
   onGfError: function(a_code,a_params) {
-    switch (a_code){
-      case 'authFailed':
-        this.showNotify("GmailNotifier",_("Gmail authentication failed!"));
+    if(Settings.showerrors=='yes'){
+      switch (a_code){
+        case 'authFailed':
+          this.showNotify("GmailNotifier",_("Gmail authentication failed!"));
         this.set_applet_tooltip(_("Gmail authentication failed!"));
-      break;
-      case 'feedReadFailed':
-        this.showNotify("GmailNotifier",_("Gmail feed reading failed!"));
-        this.set_applet_tooltip(_("Gmail feed reading failed!"));
-      break;
-      case 'feedParseFailed':
-        this.showNotify("GmailNotifier",_("Gmail feed parsing failed!"));
-        this.set_applet_tooltip(_("Gmail feed parsing failed!"));
-      break;
+        break;
+        case 'feedReadFailed':
+          this.showNotify("GmailNotifier",_("Gmail feed reading failed!"));
+          this.set_applet_tooltip(_("Gmail feed reading failed!"));
+        break;
+        case 'feedParseFailed':
+          this.showNotify("GmailNotifier",_("Gmail feed parsing failed!"));
+          this.set_applet_tooltip(_("Gmail feed parsing failed!"));
+        break;
+      }
     }
   },
   
