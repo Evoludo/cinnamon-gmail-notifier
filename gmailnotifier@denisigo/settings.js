@@ -18,3 +18,5 @@ password[0]='';
 // Mailbox checking timeout, seconds
 var checktimeout=60;
 
+var showerrors='yes';
+
