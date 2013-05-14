@@ -22,6 +22,8 @@ MyApplet.prototype = {
     this._chkMailTimerId = 0;
     this.last_modified = new Array;
     this.litup = false;
+    this.a_params = null;
+    this.new_mail_flag = false;
     
     this.checkTimeout=Settings.checktimeout*1000;
 
@@ -33,7 +35,7 @@ MyApplet.prototype = {
 
     try {
       this.set_applet_icon_symbolic_name('mail-read-symbolic');
-      this.set_applet_tooltip(_("Open Gmail"));
+      this.set_applet_tooltip(_("Click to display mail."));
       
       for(i = 0; i < Settings.username.length; i++)
       {
@@ -79,14 +81,16 @@ MyApplet.prototype = {
   onGfNoNewMail: function() {
     //this.set_applet_icon_symbolic_name('mail-unread-symbolic');
     //this.set_applet_tooltip(_('No new mails.'));
+    this.new_mail_flag = false;
   },
   
   onGfNewMail: function(a_params) {
-  
+    this.new_mail_flag = true;
+    this.a_params = a_params;
     if (a_params.count==1)
-      this.set_applet_tooltip(_('You have one new mail. Click to open Gmail.'));
+      this.set_applet_tooltip(_('You have one new mail. Click to display.'));
     else
-      this.set_applet_tooltip(_('You have '+a_params.count+' new mails. Click to open Gmail.'));
+      this.set_applet_tooltip(_('You have '+a_params.count+' new mails. Click to display.'));
     
     this.set_applet_icon_symbolic_name('mail-unread-symbolic');
     this.litup = true;
@@ -109,6 +113,12 @@ MyApplet.prototype = {
         notifyText+='<b>'+authorName+'</b>: '+title+'\r\n';
       }
       this.showNotify(notifyTitle,notifyText);
+
+      if(this.temp_last_modified != null){
+          this.last_modified = this.temp_last_modified;
+          this.temp_last_modified = null;
+      }
+
       this.last_modified[a_params.id] = a_params.messages[0].modified; 
     }
     
@@ -122,7 +132,16 @@ MyApplet.prototype = {
   },
 
   on_applet_clicked: function(event) {
-    Util.spawnCommandLine("xdg-open http://gmail.com");
+    if(this.new_mail_flag == true){
+      this.temp_last_modified = new Array;
+      this.temp_last_modified = this.last_modified;
+      this.last_modified = new Array;
+      this.onGfNewMail(this.a_params);
+    }
+    else{
+      var notifyTitle =_('You have no new mail');
+      this.showNotify(notifyTitle, '');
+    }
   },
   
   updateChkMailTimer: function(timeout) {
